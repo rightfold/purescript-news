@@ -9,6 +9,9 @@
     "purescript-lists": "^1.0.1",
     "purescript-node-buffer": "^1.0.0",
     "purescript-eff": "^1.0.0",
-    "purescript-nonempty": "^1.1.0"
+    "purescript-nonempty": "^1.1.0",
+    "purescript-control": "^1.0.0",
+    "purescript-aff": "^1.1.0",
+    "purescript-node-streams": "^1.0.0"
   }
 }
