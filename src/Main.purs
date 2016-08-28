@@ -26,9 +26,10 @@ main :: forall eff. Eff (http :: HTTP, ref :: REF | eff) Unit
 main = do
   releases'      <- cache $ limit 10 $ releases
   reddit'        <- cache $ limit 10 $ reddit
-  twitter'       <- cache $ limit 10 $ twitter
+  google'        <- cache $ limit 10 $ google
   stackOverflow' <- cache $ limit 10 $ stackOverflow
-  let feeds = releases' : reddit' : twitter' : stackOverflow' : Nil
+  twitter'       <- cache $ limit 10 $ twitter
+  let feeds = releases' : reddit' : google' : stackOverflow' : twitter' : Nil
 
   server <- createServer $ nodeHandler (main' feeds)
   listen server 8000 (pure unit)
@@ -42,6 +43,11 @@ main = do
           { title: "Reddit"
           , url: "https://www.reddit.com/r/purescript"
           , fetch: rss "https://www.reddit.com/r/purescript.rss"
+          }
+        google =
+          { title: "Google Groups"
+          , url: "https://groups.google.com/group/purescript"
+          , fetch: rss "https://groups.google.com/forum/feed/purescript/topics/atom.xml?num=15"
           }
         twitter =
           { title: "Twitter"
