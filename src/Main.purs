@@ -48,44 +48,46 @@ index
    . (MonadReader (Request eff) m, MonadZero m)
   => List (Feed (http :: HTTP | eff))
   -> m (Response eff)
-index feeds = root *> render 200 "Home" \w ->
+index feeds = root *> render 200 "Home" \w -> do
+  write w "<section class=\"-feeds\">"
   for_ feeds \feed -> do
-    Stream.writeString w UTF8 "<section><h1><a href=\""
-    Stream.writeString w UTF8 (html feed.url)
-    Stream.writeString w UTF8 "\" rel=\"nofollow\">"
-    Stream.writeString w UTF8 (html feed.title)
-    Stream.writeString w UTF8 "</a></h1>"
+    write w "<article class=\"-feed\"><h1><a href=\""
+    write w (html feed.url)
+    write w "\" rel=\"nofollow\">"
+    write w (html feed.title)
+    write w "</a></h1>"
 
     entries' <- catchError (Right <$> feed.fetch) (pure <<< Left)
     case entries' of
       Left (err :: Error) -> do
-        Stream.writeString w UTF8 "<p>Failed to fetch feed</p><pre>"
-        Stream.writeString w UTF8 (html (show err))
-        Stream.writeString w UTF8 "</pre>"
+        write w "<p>Failed to fetch feed</p><pre>"
+        write w (html (show err))
+        write w "</pre>"
       Right entries -> do
-        Stream.writeString w UTF8 "<ol>"
+        write w "<ol>"
         for_ entries \entry -> do
-          Stream.writeString w UTF8 "<li><a href=\""
-          Stream.writeString w UTF8 (html entry.url)
-          Stream.writeString w UTF8 "\" rel=\"nofollow\">"
-          Stream.writeString w UTF8 (html entry.title)
-          Stream.writeString w UTF8 "</a> &mdash; <time>"
-          Stream.writeString w UTF8 (html entry.time)
-          Stream.writeString w UTF8 "</time></li>"
-        Stream.writeString w UTF8 "</ol>"
+          write w "<li><a href=\""
+          write w (html entry.url)
+          write w "\" rel=\"nofollow\">"
+          write w (html entry.title)
+          write w "</a> &mdash; <time>"
+          write w (html entry.time)
+          write w "</time></li>"
+        write w "</ol>"
 
-    Stream.writeString w UTF8 "</section>"
+    write w "</article>"
+  write w "</section>"
 
 notFound :: forall eff m. (MonadReader (Request eff) m) => m (Response eff)
 notFound = do
   uri <- _.uri <$> ask
   render 404 "Not Found" \w -> do
-    Stream.writeString w UTF8 """
+    write w """
       <h1>Not Found</h1>
       <p>The requested page could not be found.</p>
       <pre>"""
-    Stream.writeString w UTF8 (html uri)
-    Stream.writeString w UTF8 "</pre>"
+    write w (html uri)
+    write w "</pre>"
 
 render
   :: forall eff m
@@ -100,14 +102,71 @@ render status title body =
        , body: \w -> header w *> body w *> footer w *> Stream.end w
        }
   where header w = do
-          Stream.writeString w UTF8 """
+          write w """
             <!DOCTYPE html>
             <html>
               <head>
                 <meta charset="utf-8">
                 <title>"""
-          Stream.writeString w UTF8 (html title)
-          Stream.writeString w UTF8 "</title></head><body>"
-        footer w = Stream.writeString w UTF8 "</body></html>"
+          write w (html title)
+          write w """
+                </title>
+                <style>
+                  @import 'https://fonts.googleapis.com/css?family=Roboto';
+
+                  body {
+                    margin: 0;
+                    font-family: Roboto;
+                    font-size: 16px;
+                    color: #4d4d4d; }
+
+                  body > .-header {
+                    background: #14161A;
+                    color: white;
+                    font-family: Roboto, sans-serif;
+                    font-weight: bold;
+                    font-size: 15px;
+                    letter-spacing: 3px;
+                    text-transform: uppercase;
+                    padding: 32px; }
+
+                  body > .-feeds {
+                    padding: 32px;
+                    display: flex;
+                    flex-wrap: wrap; }
+                    body > .-feeds > .-feed {
+                      flex: 1 0 500px; }
+                      body > .-feeds > .-feed > h1 {
+                        color: #111;
+                        font-family: Roboto, sans-serif;
+                        font-size: 15px;
+                        letter-spacing: 3px;
+                        text-transform: uppercase;
+                        margin: 0 0 22px 0;
+                        line-height: 22px; }
+                        body > .-feeds > .-feed > h1 > a {
+                          color: #111;
+                          text-decoration: none; }
+                      body > .-feeds > .-feed > ol {
+                        margin: 22px 0;
+                        padding: 0;
+                        list-style: none; }
+                        body > .-feeds > .-feed > ol > li {
+                          line-height: 22px; }
+                          body > .-feeds > .-feed > ol > li > a {
+                            color: #c4953a;
+                            text-decoration: none; }
+                          body > .-feeds > .-feed > ol > li > a:hover,
+                          body > .-feeds > .-feed > ol > li > a:visited {
+                            color: #e8d5b0; }
+                </style>
+              </head>
+              <body>
+                <header class="-header">
+                  PureScript News
+                </header>"""
+        footer w = write w "</body></html>"
 
 foreign import html :: String -> String
+
+write w s = Stream.writeString w UTF8 s
