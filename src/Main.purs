@@ -5,6 +5,8 @@ module Main
 import Control.Alt ((<|>))
 import Control.Monad.Aff (Aff)
 import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Exception (Error)
+import Control.Monad.Error.Class (catchError)
 import Control.MonadZero (class MonadZero)
 import Cowlaser.Route (root, withRouting)
 import Cowlaser.Serve (nodeHandler)
@@ -27,7 +29,9 @@ main' = withRouting (index feeds <|> notFound)
         releases =
           { title: "Releases"
           , url: "https://github.com/purescript/purescript/releases"
-          , fetch: pure Nil
+          , fetch: do
+              r <- request "https://api.github.com/repos/purescript/purescript/releases"
+              pure Nil
           }
         reddit =
           { title: "Reddit"
@@ -56,7 +60,23 @@ index feeds = root *> render 200 "Home" \w ->
     Stream.writeString w UTF8 (html feed.url)
     Stream.writeString w UTF8 "\" rel=\"nofollow\">"
     Stream.writeString w UTF8 (html feed.title)
-    Stream.writeString w UTF8 "</a></h1></section>"
+    Stream.writeString w UTF8 "</a></h1>"
+
+    entries' <- catchError (Right <$> feed.fetch) (pure <<< Left)
+    case entries' of
+      Left (err :: Error) -> do
+        Stream.writeString w UTF8 "<p>Failed to fetch feed</p><pre>"
+        Stream.writeString w UTF8 (html (show err))
+        Stream.writeString w UTF8 "</pre>"
+      Right entries -> do
+        Stream.writeString w UTF8 "<ol>"
+        for_ entries \entry -> do
+          Stream.writeString w UTF8 "<li>"
+          Stream.writeString w UTF8 (html entry.title)
+          Stream.writeString w UTF8 "</li>"
+        Stream.writeString w UTF8 "</ol>"
+
+    Stream.writeString w UTF8 "</section>"
 
 notFound :: forall eff m. (MonadReader (Request eff) m) => m (Response eff)
 notFound = do
@@ -93,3 +113,5 @@ render status title body =
         footer w = Stream.writeString w UTF8 "</body></html>"
 
 foreign import html :: String -> String
+
+foreign import request :: forall eff. String -> Aff (http :: HTTP | eff) String
