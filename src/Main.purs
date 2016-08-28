@@ -9,6 +9,7 @@ import Control.Monad.Eff.Exception (Error)
 import Control.Monad.Eff.Ref (REF)
 import Control.Monad.Error.Class (catchError)
 import Control.MonadZero (class MonadZero)
+import Control.Parallel.Class (parTraverse)
 import Cowlaser.HTTP (statusNotFound, statusOK)
 import Cowlaser.Route (root, withRouting)
 import Cowlaser.Serve (nodeHandler)
@@ -73,16 +74,18 @@ index
   => List (Feed (http :: HTTP | eff))
   -> m (Response eff)
 index feeds = root *> render statusOK "Home" \w -> do
+  feeds' <- feeds # parTraverse \feed ->
+    {feed, entries: _} <$> catchError (Right <$> feed.fetch) (pure <<< Left)
+
   write w "<section class=\"-feeds\">"
-  for_ feeds \feed -> do
+  for_ feeds' \{feed, entries} -> do
     write w "<article class=\"-feed\"><h1><a href=\""
     write w (html feed.url)
     write w "\" rel=\"nofollow\">"
     write w (html feed.title)
     write w "</a></h1>"
 
-    entries' <- catchError (Right <$> feed.fetch) (pure <<< Left)
-    case entries' of
+    case entries of
       Left (err :: Error) -> do
         write w "<p>Failed to fetch feed</p><pre>"
         write w (html (show err))
