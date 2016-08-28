@@ -14,7 +14,7 @@ import Cowlaser.Route (root, withRouting)
 import Cowlaser.Serve (nodeHandler)
 import Data.Map as Map
 import News.Feed (cache, Feed)
-import News.Feed.Releases (releases)
+import News.Feed.RSS (rss)
 import News.Prelude
 import Node.Encoding (Encoding(UTF8))
 import Node.HTTP (createServer, HTTP, listen)
@@ -32,10 +32,16 @@ main = do
   server <- createServer $ nodeHandler (main' feeds)
   listen server 8000 (pure unit)
 
-  where reddit =
+  where releases =
+          { title: "Releases"
+          , url: "https://github.com/purescript/purescript/releases"
+          , fetch: rss "https://github.com/purescript/purescript/releases.atom"
+          }
+
+        reddit =
           { title: "Reddit"
           , url: "https://www.reddit.com/r/purescript"
-          , fetch: pure Nil
+          , fetch: rss "https://www.reddit.com/r/purescript.rss"
           }
         twitter =
           { title: "Twitter"
@@ -45,7 +51,7 @@ main = do
         stackOverflow =
           { title: "Stack Overflow"
           , url: "https://stackoverflow.com/questions/tagged/purescript"
-          , fetch: pure Nil
+          , fetch: rss "https://stackoverflow.com/feeds/tag?tagnames=purescript&sort=newest"
           }
 
 main'
