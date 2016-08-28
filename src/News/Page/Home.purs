@@ -51,9 +51,9 @@ home feeds = render statusOK "Home" \w -> do
           <center>
             <a class="twitter-timeline"
                href="https://twitter.com/hashtag/purescript"
-               data-chrome="noheader nofooter"
-               height="400"
-               width="500"
+               data-chrome="noheader nofooter noborder"
+               height="300"
+               width="300"
                data-widget-id='"""
         write w (html widgetID)
         write w """'>Tweets about PureScript</a>

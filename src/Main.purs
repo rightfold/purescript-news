@@ -16,40 +16,40 @@ import Node.HTTP (createServer, listen)
 
 main :: forall eff. Eff (http :: HTTP, ref :: REF | eff) Unit
 main = do
-  releases'      <- cache $ limit 10 $ releases
   reddit'        <- cache $ limit 10 $ reddit
+  twitter'       <- cache $ limit 10 $ twitter
   google'        <- cache $ limit 10 $ google
   stackOverflow' <- cache $ limit 10 $ stackOverflow
-  twitter'       <- cache $ limit 10 $ twitter
-  let feeds = releases' : reddit' : google' : stackOverflow' : twitter' : Nil
+  releases'      <- cache $ limit 10 $ releases
+  let feeds = reddit' : twitter' : google' : stackOverflow' : releases' : Nil
 
   server <- createServer $ nodeHandler (main' feeds)
   listen server 8000 (pure unit)
 
-  where releases =
-          { title: "Releases"
-          , url: "https://github.com/purescript/purescript/releases"
-          , fetch: rss "https://github.com/purescript/purescript/releases.atom"
-          }
-        reddit =
+  where reddit =
           { title: "Reddit"
           , url: "https://www.reddit.com/r/purescript"
           , fetch: rss "https://www.reddit.com/r/purescript.rss"
-          }
-        google =
-          { title: "Google Groups"
-          , url: "https://groups.google.com/group/purescript"
-          , fetch: rss "https://groups.google.com/forum/feed/purescript/topics/atom.xml?num=15"
           }
         twitter =
           { title: "Twitter"
           , url: "https://twitter.com/search?q=%23purescript"
           , fetch: pure (TwitterEntryList "769970282056605700")
           }
+        google =
+          { title: "Google Groups"
+          , url: "https://groups.google.com/group/purescript"
+          , fetch: rss "https://groups.google.com/forum/feed/purescript/topics/atom.xml?num=15"
+          }
         stackOverflow =
           { title: "Stack Overflow"
           , url: "https://stackoverflow.com/questions/tagged/purescript"
           , fetch: rss "https://stackoverflow.com/feeds/tag?tagnames=purescript&sort=newest"
+          }
+        releases =
+          { title: "Releases"
+          , url: "https://github.com/purescript/purescript/releases"
+          , fetch: rss "https://github.com/purescript/purescript/releases.atom"
           }
 
 main'
