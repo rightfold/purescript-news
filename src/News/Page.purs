@@ -1,6 +1,6 @@
 module News.Page
 ( render
-, html
+, escapeHTML
 ) where
 
 import Control.Monad.Aff (Aff)
@@ -29,7 +29,7 @@ render status title body =
               <head>
                 <meta charset="utf-8">
                 <title>"""
-          write w (html title)
+          write w (escapeHTML title)
           write w """
                 </title>
                 <style>
@@ -96,6 +96,6 @@ render status title body =
                 </header>"""
         footer w = write w "</body></html>"
 
-foreign import html :: String -> String
+foreign import escapeHTML :: String -> String
 
 write w s = Stream.writeString w UTF8 s

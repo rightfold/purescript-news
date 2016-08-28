@@ -3,7 +3,7 @@ module News.Page.NotFound
 ) where
 
 import Cowlaser.HTTP (statusNotFound)
-import News.Page (html, render)
+import News.Page (escapeHTML, render)
 import News.Prelude
 import Node.Encoding (Encoding(UTF8))
 import Node.Stream.Aff as Stream
@@ -16,7 +16,7 @@ notFound = do
       <h1>Not Found</h1>
       <p>The requested page could not be found.</p>
       <pre>"""
-    write w (html uri)
+    write w (escapeHTML uri)
     write w "</pre>"
 
 write w s = Stream.writeString w UTF8 s
