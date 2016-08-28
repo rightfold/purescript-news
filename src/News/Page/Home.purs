@@ -48,28 +48,26 @@ home feeds = render statusOK "Home" \w -> do
         write w "</ol>"
       Right (TwitterEntryList widgetID) -> do
         write w """
-          <center>
-            <a class="twitter-timeline"
-               href="https://twitter.com/hashtag/purescript"
-               data-chrome="noheader nofooter noborder"
-               height="300"
-               width="300"
-               data-widget-id='"""
+          <a class="twitter-timeline"
+             href="https://twitter.com/hashtag/purescript"
+             data-chrome="noheader nofooter noborder"
+             height="300"
+             width="100%"
+             data-widget-id='"""
         write w (html widgetID)
         write w """'>Tweets about PureScript</a>
-            <script>
-            !function(d, s, id) {
-                var js, fjs = d.getElementsByTagName(s)[0],
-                    p = /^http:/.test(d.location) ? 'http' : 'https';
-                if (!d.getElementById(id)) {
-                    js = d.createElement(s);
-                    js.id = id;
-                    js.src = p + "://platform.twitter.com/widgets.js";
-                    fjs.parentNode.insertBefore(js, fjs);
-                }
-            }(document, "script", "twitter-wjs");
-            </script>
-          </center>"""
+          <script>
+          !function(d, s, id) {
+              var js, fjs = d.getElementsByTagName(s)[0],
+                  p = /^http:/.test(d.location) ? 'http' : 'https';
+              if (!d.getElementById(id)) {
+                  js = d.createElement(s);
+                  js.id = id;
+                  js.src = p + "://platform.twitter.com/widgets.js";
+                  fjs.parentNode.insertBefore(js, fjs);
+              }
+          }(document, "script", "twitter-wjs");
+          </script>"""
 
     write w "<p class=\"-more\"><a href=\""
     write w (html feed.url)
