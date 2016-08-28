@@ -1,0 +1,14 @@
+{
+  "name": "purescript-news",
+  "dependencies": {
+    "purescript-prelude": "^1.0.1",
+    "purescript-cowlaser": "^0.6.0",
+    "purescript-node-http": "^1.1.0",
+    "purescript-transformers": "^1.0.0",
+    "purescript-maps": "^1.1.0",
+    "purescript-lists": "^1.0.1",
+    "purescript-node-buffer": "^1.0.0",
+    "purescript-eff": "^1.0.0",
+    "purescript-nonempty": "^1.1.0"
+  }
+}
