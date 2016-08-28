@@ -7,7 +7,7 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Ref (REF)
 import Cowlaser.Route (root, withRouting)
 import Cowlaser.Serve (nodeHandler)
-import News.Feed (cache, Feed, limit)
+import News.Feed (cache, EntryList(..), Feed, limit)
 import News.Feed.RSS (rss)
 import News.Page.Home (home)
 import News.Page.NotFound (notFound)
@@ -43,8 +43,8 @@ main = do
           }
         twitter =
           { title: "Twitter"
-          , url: "https://twitter.com/purescript"
-          , fetch: pure Nil
+          , url: "https://twitter.com/search?q=%23purescript"
+          , fetch: pure (TwitterEntryList "769970282056605700")
           }
         stackOverflow =
           { title: "Stack Overflow"

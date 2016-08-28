@@ -1,5 +1,6 @@
 module News.Feed
 ( Feed
+, EntryList(..)
 , Entry
 , cache
 , limit
@@ -15,8 +16,12 @@ import News.Prelude
 type Feed eff =
   { title :: String
   , url   :: String
-  , fetch :: Aff eff (List Entry)
+  , fetch :: Aff eff EntryList
   }
+
+data EntryList
+  = GenericEntryList (List Entry)
+  | TwitterEntryList String
 
 type Entry =
   { title :: String
@@ -42,4 +47,7 @@ cache feed = do
               pure new
 
 limit :: forall eff. Int -> Feed eff -> Feed eff
-limit n feed = feed { fetch = List.take n <$> feed.fetch }
+limit n feed = feed { fetch = go }
+  where go = feed.fetch <#> case _ of
+               GenericEntryList l -> GenericEntryList $ List.take n l
+               TwitterEntryList t -> TwitterEntryList t

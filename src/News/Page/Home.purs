@@ -7,7 +7,7 @@ import Control.Monad.Error.Class (catchError)
 import Control.Parallel.Class (parTraverse)
 import Cowlaser.HTTP (statusOK)
 import Data.JSDate (JSDate)
-import News.Feed (Feed)
+import News.Feed (EntryList(..), Feed)
 import News.Page (html, render)
 import News.Prelude
 import Node.Encoding (Encoding(UTF8))
@@ -35,7 +35,7 @@ home feeds = render statusOK "Home" \w -> do
         write w "<p>Failed to fetch feed</p><pre>"
         write w (html (show err))
         write w "</pre>"
-      Right entries -> do
+      Right (GenericEntryList entries) -> do
         write w "<ol>"
         for_ entries \entry -> do
           write w "<li><a href=\""
@@ -46,6 +46,15 @@ home feeds = render statusOK "Home" \w -> do
           write w (html (timeAgo entry.time))
           write w "</time></li>"
         write w "</ol>"
+      Right (TwitterEntryList widgetID) -> do
+        write w """
+            <a class="twitter-timeline"
+               href="https://twitter.com/hashtag/purescript"
+               data-widget-id='"""
+        write w (html widgetID)
+        write w """'>Tweets about PureScript</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+          """
 
     write w "<p class=\"-more\"><a href=\""
     write w (html feed.url)
