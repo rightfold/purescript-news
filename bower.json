@@ -16,6 +16,7 @@
     "purescript-foldable-traversable": "^1.0.0",
     "purescript-either": "^1.0.0",
     "purescript-exceptions": "^1.0.0",
-    "purescript-foreign": "^1.1.0"
+    "purescript-foreign": "^1.1.0",
+    "purescript-refs": "^1.0.0"
   }
 }

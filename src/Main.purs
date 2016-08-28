@@ -6,12 +6,13 @@ import Control.Alt ((<|>))
 import Control.Monad.Aff (Aff)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Exception (Error)
+import Control.Monad.Eff.Ref (REF)
 import Control.Monad.Error.Class (catchError)
 import Control.MonadZero (class MonadZero)
 import Cowlaser.Route (root, withRouting)
 import Cowlaser.Serve (nodeHandler)
 import Data.Map as Map
-import News.Feed (Feed)
+import News.Feed (cache, Feed)
 import News.Feed.Releases (releases)
 import News.Prelude
 import Node.Encoding (Encoding(UTF8))
@@ -19,15 +20,18 @@ import Node.HTTP (createServer, HTTP, listen)
 import Node.Stream (Writable)
 import Node.Stream.Aff as Stream
 
-main :: forall eff. Eff (http :: HTTP | eff) Unit
+main :: forall eff. Eff (http :: HTTP, ref :: REF | eff) Unit
 main = do
-  server <- createServer $ nodeHandler main'
+  releases' <- cache releases
+  reddit' <- cache reddit
+  twitter' <- cache twitter
+  stackOverflow' <- cache stackOverflow
+  let feeds = releases' : reddit' : twitter' : stackOverflow' : Nil
+
+  server <- createServer $ nodeHandler (main' feeds)
   listen server 8000 (pure unit)
 
-main' :: forall eff m. (MonadReader (Request eff) m) => m (Response eff)
-main' = withRouting (index feeds <|> notFound)
-  where feeds = releases : reddit : twitter : stackOverflow : Nil
-        reddit =
+  where reddit =
           { title: "Reddit"
           , url: "https://www.reddit.com/r/purescript"
           , fetch: pure Nil
@@ -42,6 +46,13 @@ main' = withRouting (index feeds <|> notFound)
           , url: "https://stackoverflow.com/questions/tagged/purescript"
           , fetch: pure Nil
           }
+
+main'
+  :: forall eff m
+   . (MonadReader (Request eff) m)
+  => List (Feed (http :: HTTP | eff))
+  -> m (Response eff)
+main' feeds = withRouting (index feeds <|> notFound)
 
 index
   :: forall eff m

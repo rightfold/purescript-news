@@ -1,9 +1,12 @@
 module News.Feed
 ( Feed
 , Entry
+, cache
 ) where
 
 import Control.Monad.Aff (Aff)
+import Control.Monad.Eff.Class (liftEff, class MonadEff)
+import Control.Monad.Eff.Ref (newRef, readRef, REF, writeRef)
 import News.Prelude
 
 type Feed eff =
@@ -17,3 +20,20 @@ type Entry =
   , url   :: String
   , time  :: String -- TODO: proper type
   }
+
+cache
+  :: forall eff m
+   . (MonadEff (ref :: REF | eff) m)
+  => Feed (ref :: REF | eff)
+  -> m (Feed (ref :: REF | eff))
+cache feed = do
+  ref <- liftEff $ newRef Nothing
+  pure feed { fetch = cached ref }
+  where cached ref = do
+          old <- liftEff $ readRef ref
+          case old of
+            Just entries -> pure entries
+            Nothing -> do
+              new <- feed.fetch
+              liftEff $ writeRef ref (Just new)
+              pure new
