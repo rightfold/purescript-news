@@ -47,6 +47,10 @@ home feeds = render statusOK "Home" \w -> do
           write w "</time></li>"
         write w "</ol>"
 
+    write w "<p class=\"-more\"><a href=\""
+    write w (html feed.url)
+    write w "\" rel=\"nofollow\">View More</a></p>"
+
     write w "</article>"
   write w "</section>"
 

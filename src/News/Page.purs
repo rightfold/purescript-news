@@ -44,7 +44,6 @@ render status title body =
                   body > .-header {
                     background: #14161A;
                     color: white;
-                    font-family: Roboto, sans-serif;
                     font-weight: bold;
                     font-size: 15px;
                     letter-spacing: 3px;
@@ -59,7 +58,6 @@ render status title body =
                       flex: 1 0 500px; }
                       body > .-feeds > .-feed > h1 {
                         color: #111;
-                        font-family: Roboto, sans-serif;
                         font-size: 15px;
                         letter-spacing: 3px;
                         text-transform: uppercase;
@@ -80,6 +78,16 @@ render status title body =
                           body > .-feeds > .-feed > ol > li > a:hover,
                           body > .-feeds > .-feed > ol > li > a:visited {
                             color: #e8d5b0; }
+                      body > .-feeds > .-feed > .-more {
+                        margin: 22px 0;
+                        line-height: 22px; }
+                        body > .-feeds > .-feed > .-more > a {
+                          color: #c4953a;
+                          text-transform: uppercase;
+                          font-weight: bold;
+                          letter-spacing: 1px;
+                          font-size: 10px;
+                          text-decoration: none; }
                 </style>
               </head>
               <body>
