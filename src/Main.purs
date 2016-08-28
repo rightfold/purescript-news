@@ -9,6 +9,7 @@ import Control.Monad.Eff.Exception (Error)
 import Control.Monad.Eff.Ref (REF)
 import Control.Monad.Error.Class (catchError)
 import Control.MonadZero (class MonadZero)
+import Cowlaser.HTTP (statusNotFound, statusOK)
 import Cowlaser.Route (root, withRouting)
 import Cowlaser.Serve (nodeHandler)
 import Data.Map as Map
@@ -59,7 +60,7 @@ index
    . (MonadReader (Request eff) m, MonadZero m)
   => List (Feed (http :: HTTP | eff))
   -> m (Response eff)
-index feeds = root *> render 200 "Home" \w -> do
+index feeds = root *> render statusOK "Home" \w -> do
   write w "<section class=\"-feeds\">"
   for_ feeds \feed -> do
     write w "<article class=\"-feed\"><h1><a href=\""
@@ -92,7 +93,7 @@ index feeds = root *> render 200 "Home" \w -> do
 notFound :: forall eff m. (MonadReader (Request eff) m) => m (Response eff)
 notFound = do
   uri <- _.uri <$> ask
-  render 404 "Not Found" \w -> do
+  render statusNotFound "Not Found" \w -> do
     write w """
       <h1>Not Found</h1>
       <p>The requested page could not be found.</p>
@@ -103,12 +104,12 @@ notFound = do
 render
   :: forall eff m
    . (Applicative m)
-  => Int
+  => {code :: Int, message :: String}
   -> String
   -> (Writable () (http :: HTTP | eff) -> Aff (http :: HTTP | eff) Unit)
   -> m (Response eff)
 render status title body =
-  pure { status: {code: status, message: ""}
+  pure { status
        , headers: Map.singleton (CI "content-type") ("text/html" :| Nil)
        , body: \w -> header w *> body w *> footer w *> Stream.end w
        }
