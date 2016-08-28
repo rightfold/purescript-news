@@ -1,12 +1,5 @@
 'use strict';
 
-exports.html = function(s) {
-  return s.replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#39;');
-};
-
 // http://stackoverflow.com/a/3177838/1804599
 exports.timeAgo = function(date) {
   return function() {

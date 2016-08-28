@@ -8,6 +8,7 @@ module News.Prelude
 , module Data.NonEmpty
 , module Data.String.CaseInsensitive
 , module Data.Traversable
+, module Node.HTTP
 , module Prelude
 ) where
 
@@ -20,4 +21,5 @@ import Data.Maybe
 import Data.NonEmpty ((:|), NonEmpty(..))
 import Data.String.CaseInsensitive
 import Data.Traversable
+import Node.HTTP (HTTP)
 import Prelude
