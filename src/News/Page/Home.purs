@@ -15,7 +15,7 @@ import Node.Stream.Aff as Stream
 
 home
   :: forall eff m
-   . (MonadReader (Request eff) m)
+   . (Applicative m)
   => List (Feed (http :: HTTP | eff))
   -> m (Response eff)
 home feeds = render statusOK "Home" \w -> do
