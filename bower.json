@@ -15,6 +15,7 @@
     "purescript-node-streams": "^1.0.0",
     "purescript-foldable-traversable": "^1.0.0",
     "purescript-either": "^1.0.0",
-    "purescript-exceptions": "^1.0.0"
+    "purescript-exceptions": "^1.0.0",
+    "purescript-foreign": "^1.1.0"
   }
 }

@@ -5,11 +5,14 @@ module Main
 import Control.Alt ((<|>))
 import Control.Monad.Aff (Aff)
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Exception (Error)
-import Control.Monad.Error.Class (catchError)
+import Control.Monad.Eff.Exception (Error, error)
+import Control.Monad.Error.Class (catchError, throwError)
 import Control.MonadZero (class MonadZero)
 import Cowlaser.Route (root, withRouting)
 import Cowlaser.Serve (nodeHandler)
+import Data.Foreign as F
+import Data.Foreign.Class as F
+import Data.List as List
 import Data.Map as Map
 import News.Feed (Feed)
 import News.Prelude
@@ -31,7 +34,14 @@ main' = withRouting (index feeds <|> notFound)
           , url: "https://github.com/purescript/purescript/releases"
           , fetch: do
               r <- request "https://api.github.com/repos/purescript/purescript/releases"
-              pure Nil
+              let r' = do
+                    pure r >>= F.readJSON >>= F.readArray >>= traverse \jEntry -> do
+                      title <- F.readProp "name"     jEntry
+                      url   <- F.readProp "html_url" jEntry
+                      pure {title, url}
+              case r' of
+                Left err -> throwError (error (show err))
+                Right es -> pure (List.fromFoldable es)
           }
         reddit =
           { title: "Reddit"
@@ -71,9 +81,11 @@ index feeds = root *> render 200 "Home" \w ->
       Right entries -> do
         Stream.writeString w UTF8 "<ol>"
         for_ entries \entry -> do
-          Stream.writeString w UTF8 "<li>"
+          Stream.writeString w UTF8 "<li><a href=\""
+          Stream.writeString w UTF8 (html entry.url)
+          Stream.writeString w UTF8 "\" rel=\"nofollow\">"
           Stream.writeString w UTF8 (html entry.title)
-          Stream.writeString w UTF8 "</li>"
+          Stream.writeString w UTF8 "</a></li>"
         Stream.writeString w UTF8 "</ol>"
 
     Stream.writeString w UTF8 "</section>"
