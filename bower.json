@@ -16,7 +16,6 @@
     "purescript-foldable-traversable": "^1.0.0",
     "purescript-either": "^1.0.0",
     "purescript-exceptions": "^1.0.0",
-    "purescript-foreign": "^1.1.0",
     "purescript-refs": "^1.0.0",
     "purescript-js-date": "^2.0.0",
     "purescript-parallel": "^1.1.0"
