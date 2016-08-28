@@ -54,7 +54,7 @@ index feeds = root *> render 200 "Home" \w ->
   for_ feeds \feed -> do
     Stream.writeString w UTF8 "<section><h1><a href=\""
     Stream.writeString w UTF8 (html feed.url)
-    Stream.writeString w UTF8 "\">"
+    Stream.writeString w UTF8 "\" rel=\"nofollow\">"
     Stream.writeString w UTF8 (html feed.title)
     Stream.writeString w UTF8 "</a></h1></section>"
 
