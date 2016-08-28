@@ -9,6 +9,7 @@ import Control.MonadZero (class MonadZero)
 import Cowlaser.Route (root, withRouting)
 import Cowlaser.Serve (nodeHandler)
 import Data.Map as Map
+import News.Feed (Feed)
 import News.Prelude
 import Node.Encoding (Encoding(UTF8))
 import Node.HTTP (createServer, HTTP, listen)
@@ -21,10 +22,41 @@ main = do
   listen server 8000 (pure unit)
 
 main' :: forall eff m. (MonadReader (Request eff) m) => m (Response eff)
-main' = withRouting (index <|> notFound)
+main' = withRouting (index feeds <|> notFound)
+  where feeds = releases : reddit : twitter : stackOverflow : Nil
+        releases =
+          { title: "Releases"
+          , url: "https://github.com/purescript/purescript/releases"
+          , fetch: pure Nil
+          }
+        reddit =
+          { title: "Reddit"
+          , url: "https://www.reddit.com/r/purescript"
+          , fetch: pure Nil
+          }
+        twitter =
+          { title: "Twitter"
+          , url: "https://twitter.com/purescript"
+          , fetch: pure Nil
+          }
+        stackOverflow =
+          { title: "Stack Overflow"
+          , url: "https://stackoverflow.com/questions/tagged/purescript"
+          , fetch: pure Nil
+          }
 
-index :: forall eff m. (MonadReader (Request eff) m, MonadZero m) => m (Response eff)
-index = root *> render 200 "Home" \w -> pure unit
+index
+  :: forall eff m
+   . (MonadReader (Request eff) m, MonadZero m)
+  => List (Feed (http :: HTTP | eff))
+  -> m (Response eff)
+index feeds = root *> render 200 "Home" \w ->
+  for_ feeds \feed -> do
+    Stream.writeString w UTF8 "<section><h1><a href=\""
+    Stream.writeString w UTF8 (html feed.url)
+    Stream.writeString w UTF8 "\">"
+    Stream.writeString w UTF8 (html feed.title)
+    Stream.writeString w UTF8 "</a></h1></section>"
 
 notFound :: forall eff m. (MonadReader (Request eff) m) => m (Response eff)
 notFound = do
