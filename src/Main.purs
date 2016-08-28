@@ -60,5 +60,4 @@ render status title body =
           Stream.writeString w UTF8 "</title></head><body>"
         footer w = Stream.writeString w UTF8 "</body></html>"
 
-html :: String -> String
-html = id
+foreign import html :: String -> String
