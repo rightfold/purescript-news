@@ -15,4 +15,5 @@ type Feed eff =
 type Entry =
   { title :: String
   , url   :: String
+  , time  :: String -- TODO: proper type
   }

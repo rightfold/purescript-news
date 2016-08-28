@@ -24,9 +24,10 @@ releases =
 parse :: forall m. (MonadError Error m) => String -> m (List Entry)
 parse json =
   pure json >>= F.readJSON >>= F.readArray >>= traverse (\jEntry -> do
-    title <- F.readProp "name"     jEntry
-    url   <- F.readProp "html_url" jEntry
-    pure {title, url})
+    title <- F.readProp "name"         jEntry
+    url   <- F.readProp "html_url"     jEntry
+    time  <- F.readProp "published_at" jEntry
+    pure {title, url, time})
   # case _ of
       Left err -> throwError (error (show err))
       Right es -> pure (List.fromFoldable es)

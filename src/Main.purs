@@ -69,7 +69,9 @@ index feeds = root *> render 200 "Home" \w ->
           Stream.writeString w UTF8 (html entry.url)
           Stream.writeString w UTF8 "\" rel=\"nofollow\">"
           Stream.writeString w UTF8 (html entry.title)
-          Stream.writeString w UTF8 "</a></li>"
+          Stream.writeString w UTF8 "</a> &mdash; <time>"
+          Stream.writeString w UTF8 (html entry.time)
+          Stream.writeString w UTF8 "</time></li>"
         Stream.writeString w UTF8 "</ol>"
 
     Stream.writeString w UTF8 "</section>"
