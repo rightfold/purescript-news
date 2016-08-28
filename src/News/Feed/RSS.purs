@@ -14,12 +14,13 @@ import Node.HTTP.Aff (request)
 rss :: forall eff. String -> Aff (http :: HTTP | eff) (List Entry)
 rss url = do
   text <- request url
-  case parse Just Nothing text of
+  case parse Just Nothing url text of
     Just entries -> pure (List.fromFoldable entries)
     Nothing -> throwError (error "bad RSS feed")
 
 foreign import parse
   :: (forall a. a -> Maybe a)
   -> (forall a. Maybe a)
+  -> String
   -> String
   -> Maybe (Array Entry)

@@ -13,7 +13,7 @@ import Cowlaser.HTTP (statusNotFound, statusOK)
 import Cowlaser.Route (root, withRouting)
 import Cowlaser.Serve (nodeHandler)
 import Data.Map as Map
-import News.Feed (cache, Feed)
+import News.Feed (cache, Feed, limit)
 import News.Feed.RSS (rss)
 import News.Prelude
 import Node.Encoding (Encoding(UTF8))
@@ -23,10 +23,10 @@ import Node.Stream.Aff as Stream
 
 main :: forall eff. Eff (http :: HTTP, ref :: REF | eff) Unit
 main = do
-  releases' <- cache releases
-  reddit' <- cache reddit
-  twitter' <- cache twitter
-  stackOverflow' <- cache stackOverflow
+  releases'      <- cache $ limit 10 $ releases
+  reddit'        <- cache $ limit 10 $ reddit
+  twitter'       <- cache $ limit 10 $ twitter
+  stackOverflow' <- cache $ limit 10 $ stackOverflow
   let feeds = releases' : reddit' : twitter' : stackOverflow' : Nil
 
   server <- createServer $ nodeHandler (main' feeds)

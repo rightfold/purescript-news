@@ -2,11 +2,13 @@ module News.Feed
 ( Feed
 , Entry
 , cache
+, limit
 ) where
 
 import Control.Monad.Aff (Aff)
 import Control.Monad.Eff.Class (liftEff, class MonadEff)
 import Control.Monad.Eff.Ref (newRef, readRef, REF, writeRef)
+import Data.List as List
 import News.Prelude
 
 type Feed eff =
@@ -37,3 +39,6 @@ cache feed = do
               new <- feed.fetch
               liftEff $ writeRef ref (Just new)
               pure new
+
+limit :: forall eff. Int -> Feed eff -> Feed eff
+limit n feed = feed { fetch = List.take n <$> feed.fetch }
