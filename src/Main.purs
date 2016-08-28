@@ -5,16 +5,14 @@ module Main
 import Control.Alt ((<|>))
 import Control.Monad.Aff (Aff)
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Exception (Error, error)
-import Control.Monad.Error.Class (catchError, throwError)
+import Control.Monad.Eff.Exception (Error)
+import Control.Monad.Error.Class (catchError)
 import Control.MonadZero (class MonadZero)
 import Cowlaser.Route (root, withRouting)
 import Cowlaser.Serve (nodeHandler)
-import Data.Foreign as F
-import Data.Foreign.Class as F
-import Data.List as List
 import Data.Map as Map
 import News.Feed (Feed)
+import News.Feed.Releases (releases)
 import News.Prelude
 import Node.Encoding (Encoding(UTF8))
 import Node.HTTP (createServer, HTTP, listen)
@@ -29,20 +27,6 @@ main = do
 main' :: forall eff m. (MonadReader (Request eff) m) => m (Response eff)
 main' = withRouting (index feeds <|> notFound)
   where feeds = releases : reddit : twitter : stackOverflow : Nil
-        releases =
-          { title: "Releases"
-          , url: "https://github.com/purescript/purescript/releases"
-          , fetch: do
-              r <- request "https://api.github.com/repos/purescript/purescript/releases"
-              let r' = do
-                    pure r >>= F.readJSON >>= F.readArray >>= traverse \jEntry -> do
-                      title <- F.readProp "name"     jEntry
-                      url   <- F.readProp "html_url" jEntry
-                      pure {title, url}
-              case r' of
-                Left err -> throwError (error (show err))
-                Right es -> pure (List.fromFoldable es)
-          }
         reddit =
           { title: "Reddit"
           , url: "https://www.reddit.com/r/purescript"
@@ -125,5 +109,3 @@ render status title body =
         footer w = Stream.writeString w UTF8 "</body></html>"
 
 foreign import html :: String -> String
-
-foreign import request :: forall eff. String -> Aff (http :: HTTP | eff) String
