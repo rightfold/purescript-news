@@ -14,8 +14,8 @@ import News.Page.NotFound (notFound)
 import News.Prelude
 import Node.HTTP (createServer, listen)
 
-main :: forall eff. Eff (http :: HTTP, ref :: REF | eff) Unit
-main = do
+main :: forall eff. Int -> Eff (http :: HTTP, ref :: REF | eff) Unit
+main port = do
   reddit'        <- cache $ limit 10 $ reddit
   twitter'       <- cache $ limit 10 $ twitter
   google'        <- cache $ limit 10 $ google
@@ -24,7 +24,7 @@ main = do
   let feeds = reddit' : twitter' : google' : stackOverflow' : releases' : Nil
 
   server <- createServer $ nodeHandler (main' feeds)
-  listen server 8000 (pure unit)
+  listen server port (pure unit)
 
   where reddit =
           { title: "Reddit"
