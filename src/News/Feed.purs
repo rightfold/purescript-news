@@ -8,6 +8,7 @@ module News.Feed
 import Control.Monad.Aff (Aff)
 import Control.Monad.Eff.Class (liftEff, class MonadEff)
 import Control.Monad.Eff.Ref (newRef, readRef, REF, writeRef)
+import Data.JSDate (JSDate)
 import Data.List as List
 import News.Prelude
 
@@ -20,7 +21,7 @@ type Feed eff =
 type Entry =
   { title :: String
   , url   :: String
-  , time  :: String -- TODO: proper type
+  , time  :: JSDate
   }
 
 cache

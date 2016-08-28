@@ -12,6 +12,7 @@ import Control.MonadZero (class MonadZero)
 import Cowlaser.HTTP (statusNotFound, statusOK)
 import Cowlaser.Route (root, withRouting)
 import Cowlaser.Serve (nodeHandler)
+import Data.JSDate (JSDate)
 import Data.Map as Map
 import News.Feed (cache, Feed, limit)
 import News.Feed.RSS (rss)
@@ -37,7 +38,6 @@ main = do
           , url: "https://github.com/purescript/purescript/releases"
           , fetch: rss "https://github.com/purescript/purescript/releases.atom"
           }
-
         reddit =
           { title: "Reddit"
           , url: "https://www.reddit.com/r/purescript"
@@ -89,7 +89,7 @@ index feeds = root *> render statusOK "Home" \w -> do
           write w "\" rel=\"nofollow\">"
           write w (html entry.title)
           write w "</a> &mdash; <time>"
-          write w (html entry.time)
+          write w (html (timeAgo entry.time))
           write w "</time></li>"
         write w "</ol>"
 
@@ -188,3 +188,6 @@ render status title body =
 foreign import html :: String -> String
 
 write w s = Stream.writeString w UTF8 s
+
+-- FIXME: this function is impure
+foreign import timeAgo :: JSDate -> String

@@ -14,7 +14,7 @@ exports.parse = function(Just) {
           result.push({
             title: '' + item.title,
             url: '' + item.link,
-            time: '' + item.pubDate,
+            time: item.pubDate || new Date(),
           });
         });
         parser.write(text);
