@@ -2,7 +2,7 @@
   "name": "purescript-news",
   "dependencies": {
     "purescript-prelude": "^1.0.1",
-    "purescript-cowlaser": "^0.7.0",
+    "purescript-cowlaser": "=0.7.0",
     "purescript-node-http": "^1.1.0",
     "purescript-transformers": "^1.0.0",
     "purescript-maps": "^1.1.0",
