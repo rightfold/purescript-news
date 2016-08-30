@@ -18,6 +18,7 @@
     "purescript-exceptions": "^1.0.0",
     "purescript-refs": "^1.0.0",
     "purescript-js-date": "^2.0.0",
-    "purescript-parallel": "^1.1.0"
+    "purescript-parallel": "^1.1.0",
+    "purescript-node-process": "^2.0.0"
   }
 }

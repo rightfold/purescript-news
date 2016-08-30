@@ -7,15 +7,22 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Ref (REF)
 import Cowlaser.Route (root, withRouting)
 import Cowlaser.Serve (nodeHandler)
+import Data.Int (fromString)
 import News.Feed (cache, EntryList(..), Feed, limit)
 import News.Feed.RSS (rss)
 import News.Page.Home (home)
 import News.Page.NotFound (notFound)
 import News.Prelude
 import Node.HTTP (createServer, listen)
+import Node.Process (PROCESS, exit, lookupEnv)
 
-main :: forall eff. Int -> Eff (http :: HTTP, ref :: REF | eff) Unit
-main port = do
+main :: Eff (http :: HTTP, ref :: REF, process :: PROCESS) Unit
+main = do
+  mPort <- lookupEnv "PURESCRIPT_NEWS_PORT"
+  port <- case mPort >>= fromString of
+            Just port -> pure port
+            Nothing -> exit 1
+
   reddit'        <- cache $ limit 10 $ reddit
   twitter'       <- cache $ limit 10 $ twitter
   google'        <- cache $ limit 10 $ google

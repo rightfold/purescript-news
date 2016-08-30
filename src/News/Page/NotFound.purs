@@ -10,7 +10,7 @@ import Node.Stream.Aff as Stream
 
 notFound :: forall eff m. (MonadReader (Request eff) m) => m (Response eff)
 notFound = do
-  uri <- _.uri <$> ask
+  uri <- (_.uri :: Request eff -> String) <$> ask
   render statusNotFound "Not Found" \w -> do
     write w """
       <h1>Not Found</h1>

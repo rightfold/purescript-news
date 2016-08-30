@@ -29,7 +29,7 @@ render status title body =
               <head>
                 <meta charset="utf-8">
                 <title>"""
-          write w (escapeHTML title)
+          write w (escapeHTML ("PureScript News - " <> title))
           write w """
                 </title>
                 <style>
@@ -48,36 +48,51 @@ render status title body =
                     font-size: 15px;
                     letter-spacing: 3px;
                     text-transform: uppercase;
-                    padding: 32px; }
+                    padding: 22px; }
 
                   body > .-feeds {
                     padding: 32px;
                     display: flex;
                     flex-wrap: wrap; }
-                    body > .-feeds > .-feed {
-                      flex: 1 0 500px; }
+                    @media screen and (max-width: 1000px){
+                      body > .-feeds > .-feed {
+                        flex: 1 0 100%; }
+                    }
+                    @media screen and (min-width: 1000px){
+                      body > .-feeds > .-feed {
+                        flex: 1 0 50%; }
+                    }
+                    @media screen and (min-width: 1500px){
+                      body > .-feeds > .-feed {
+                        flex: 1 0 33%; }
+                    }
                       body > .-feeds > .-feed > h1 {
                         color: #111;
                         font-size: 15px;
                         letter-spacing: 3px;
                         text-transform: uppercase;
-                        margin: 0 0 22px 0;
-                        line-height: 22px; }
+                        margin: 0 10px 22px 0;
+                        padding: 0 10px;
+                        line-height: 22px;
+                        border-bottom: 1px solid #111; }
                         body > .-feeds > .-feed > h1 > a {
                           color: #111;
                           text-decoration: none; }
                       body > .-feeds > .-feed > ol {
                         margin: 22px 0;
-                        padding: 0;
+                        padding: 0 10px;
                         list-style: none; }
                         body > .-feeds > .-feed > ol > li {
-                          line-height: 22px; }
+                          line-height: 22px;
+                          clear: right; }
                           body > .-feeds > .-feed > ol > li > a {
                             color: #c4953a;
                             text-decoration: none; }
                           body > .-feeds > .-feed > ol > li > a:hover,
                           body > .-feeds > .-feed > ol > li > a:visited {
                             color: #e8d5b0; }
+                          body > .-feeds > .-feed > ol > li > time {
+                            float: right; }
                       body > .-feeds > .-feed > .-more {
                         margin: 22px 0;
                         line-height: 22px; }

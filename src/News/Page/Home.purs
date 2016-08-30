@@ -42,7 +42,7 @@ home feeds = render statusOK "Home" \w -> do
           write w (escapeHTML entry.url)
           write w "\" rel=\"nofollow\">"
           write w (escapeHTML entry.title)
-          write w "</a> &mdash; <time>"
+          write w "</a><time>"
           write w (escapeHTML (timeAgo entry.time))
           write w "</time></li>"
         write w "</ol>"
