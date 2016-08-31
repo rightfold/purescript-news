@@ -41,28 +41,37 @@ render status title body =
                     font-size: 16px;
                     color: #4d4d4d; }
 
-                  body > .-header {
+                  body > .-header, body > .-footer {
                     background: #14161A;
                     color: white;
-                    font-weight: bold;
                     font-size: 15px;
-                    letter-spacing: 3px;
-                    text-transform: uppercase;
                     padding: 22px; }
+
+                  body > .-header {
+                    font-weight: bold;
+                    letter-spacing: 3px;
+                    text-transform: uppercase; }
+
+                  body > .-footer > a {
+                    color: white;
+                    text-decoration: none;
+                    margin-right: 22px; }
+                    body > .-footer > a:hover {
+                      text-decoration: underline; }
 
                   body > .-feeds {
                     padding: 32px;
                     display: flex;
                     flex-wrap: wrap; }
-                    @media screen and (max-width: 1000px){
+                    @media screen and (max-width: 1000px) {
                       body > .-feeds > .-feed {
                         flex: 1 0 100%; }
                     }
-                    @media screen and (min-width: 1000px){
+                    @media screen and (min-width: 1000px) {
                       body > .-feeds > .-feed {
                         flex: 1 0 50%; }
                     }
-                    @media screen and (min-width: 1500px){
+                    @media screen and (min-width: 1500px) {
                       body > .-feeds > .-feed {
                         flex: 1 0 33%; }
                     }
@@ -109,7 +118,13 @@ render status title body =
                 <header class="-header">
                   PureScript News
                 </header>"""
-        footer w = write w "</body></html>"
+        footer w = write w """
+                <footer class="-footer">
+                  <a href="http://www.purescript.org/">PureScript</a>
+                  <a href="https://github.com/rightfold/purescript-news">GitHub</a>
+                </footer>
+              </body>
+            </html>"""
 
 foreign import escapeHTML :: String -> String
 
