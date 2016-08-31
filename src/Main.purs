@@ -5,18 +5,19 @@ module Main
 import Control.Alt ((<|>))
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Ref (REF)
-import Cowlaser.Route (root, withRouting)
+import Cowlaser.Route (dir, root, withRouting)
 import Cowlaser.Serve (nodeHandler)
 import Data.Int (fromString)
 import News.Feed (cache, EntryList(..), Feed, limit)
 import News.Feed.RSS (rss)
 import News.Page.Home (home)
+import News.Page.JSON (json)
 import News.Page.NotFound (notFound)
 import News.Prelude
 import Node.HTTP (createServer, listen)
 import Node.Process (PROCESS, exit, lookupEnv)
 
-main :: Eff (http :: HTTP, ref :: REF, process :: PROCESS) Unit
+main :: forall eff. Eff (http :: HTTP, ref :: REF, process :: PROCESS | eff) Unit
 main = do
   mPort <- lookupEnv "PURESCRIPT_NEWS_PORT"
   port <- maybe (exit 1) pure (mPort >>= fromString)
@@ -64,4 +65,5 @@ main'
   -> m (Response eff)
 main' feeds = withRouting go
   where go =     (root *> home feeds)
+             <|> (dir "api" $ dir "v1" $ dir "feeds" $ root *> json feeds)
              <|> (notFound)
