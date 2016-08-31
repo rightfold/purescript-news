@@ -35,6 +35,8 @@ render status title body =
                 <style>
                   @import 'https://fonts.googleapis.com/css?family=Roboto';
 
+                  * { box-sizing: border-box; }
+
                   body {
                     margin: 0;
                     font-family: Roboto;
@@ -60,7 +62,7 @@ render status title body =
                       text-decoration: underline; }
 
                   body > .-feeds {
-                    padding: 32px;
+                    padding: 12px;
                     display: flex;
                     flex-wrap: wrap; }
                     @media screen and (max-width: 1000px) {
@@ -75,13 +77,14 @@ render status title body =
                       body > .-feeds > .-feed {
                         flex: 1 0 33%; }
                     }
+                    body > .-feeds > .-feed {
+                      padding: 10px; }
                       body > .-feeds > .-feed > h1 {
                         color: #111;
                         font-size: 15px;
                         letter-spacing: 3px;
                         text-transform: uppercase;
-                        margin: 0 10px 22px 0;
-                        padding: 0 10px;
+                        margin: 10px 0;
                         line-height: 22px;
                         border-bottom: 1px solid #111; }
                         body > .-feeds > .-feed > h1 > a {
@@ -89,7 +92,7 @@ render status title body =
                           text-decoration: none; }
                       body > .-feeds > .-feed > ol {
                         margin: 22px 0;
-                        padding: 0 10px;
+                        padding: 0;
                         list-style: none; }
                         body > .-feeds > .-feed > ol > li {
                           line-height: 22px;
