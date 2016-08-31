@@ -22,7 +22,7 @@ main = do
   port <- maybe (exit 1) pure (mPort >>= fromString)
 
   reddit'        <- cache $ limit 10 $ reddit
-  twitter'       <- cache $ limit 10 $ twitter
+  twitter'       <- pure twitter
   google'        <- cache $ limit 10 $ google
   stackOverflow' <- cache $ limit 10 $ stackOverflow
   releases'      <- cache $ limit 10 $ releases
