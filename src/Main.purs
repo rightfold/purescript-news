@@ -19,9 +19,7 @@ import Node.Process (PROCESS, exit, lookupEnv)
 main :: Eff (http :: HTTP, ref :: REF, process :: PROCESS) Unit
 main = do
   mPort <- lookupEnv "PURESCRIPT_NEWS_PORT"
-  port <- case mPort >>= fromString of
-            Just port -> pure port
-            Nothing -> exit 1
+  port <- maybe (exit 1) pure (mPort >>= fromString)
 
   reddit'        <- cache $ limit 10 $ reddit
   twitter'       <- cache $ limit 10 $ twitter
