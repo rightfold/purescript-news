@@ -1,0 +1,26 @@
+language: node_js
+dist: trusty
+sudo: required
+node_js: 6
+env:
+- PATH=$HOME/purescript:$PATH
+install:
+- TAG=$(wget -q -O - https://github.com/purescript/purescript/releases/latest --server-response
+  --max-redirect 0 2>&1 | sed -n -e 's/.*Location:.*tag\///p')
+- wget -O $HOME/purescript.tar.gz https://github.com/purescript/purescript/releases/download/$TAG/linux64.tar.gz
+- tar -xvf $HOME/purescript.tar.gz -C $HOME/
+- chmod a+x $HOME/purescript
+- npm install -g bower
+- npm install -g pulp
+script:
+- bower install --production
+- pulp build
+- tar -cvf output.tar output
+deploy:
+  provider: releases
+  api_key:
+    secure: WwjHXFFcFEXy3WSGBK+6bomZ4cDMULCCxHPXHiW9QTe4RvXAfW9zkllwEzKev0SVju3ZdlnwMdAwaxk1e2khF7fsg+zWMr+KVNnn39TutpcEcx2mvC2p4zTSSIjuAaLWxmqx17wGYbA4ZC0/OEnr7kn4fiZL+g02z95YNL15bxW/x2sPFahGkhfvHzgTe4raZillki62Guc/n5gT9PfIZGX02IhLkMGhnucJF0iIMKJOnl0X8tGWoaC7CTBQWZIvAmwiY3R+MSJrkwsuqPh8vZqf7BI83GPuFMzofZ/rJKg5Se/BlJ2/3qKbN73B+uFQmY8VnJHly4U3WCsOAgdzCkPKQC/I3eU+YEjjCXyiLVwF/rQcc23WcWBKb8WFIv9Yc65VIp55fkk916cMC+m9nPMJGzX3yewHO/O9cQQs9HQ2OjcuDzulsiu/SoNS6Pw6Vz+ICMVr5wzH9WKrZhLXdPiA58uXa1d8EMw3h7jw+410xUqJGnk6RNn9GH/2KbVXyHeKJ39k5rWm3cedVnVcSh+ob8OWUJzgujv70oQ1XxYNzVjjYKrXfCCWucSf3encq2m97pY5mzrXHumfbOCzQ0luY5+TIFW0hrYfPWENp3Ne62haaITJ9PW8qY9A22f7yV9fJXj9SxNqp+LLDU67pxkIoOnwA9yMOtd2jPdhmgI=
+  file: output.tar
+  skip_cleanup: true
+  on:
+    tags: true
